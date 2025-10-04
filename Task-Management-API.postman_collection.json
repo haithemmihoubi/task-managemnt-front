@@ -1,0 +1,780 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "Task Management API v1",
+		"description": "Complete Postman collection for Task Management REST API with Spring Boot and MongoDB",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12345678"
+	},
+	"item": [
+		{
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "Create Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"taskId\", jsonData.id);",
+									"    pm.test(\"Task created successfully\", function () {",
+									"        pm.response.to.have.status(201);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Complete Project Documentation\",\n    \"description\": \"Write comprehensive documentation for the task management API including setup instructions and API usage examples\",\n    \"status\": \"TODO\",\n    \"priority\": 1,\n    \"dueDate\": \"2025-12-31\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							]
+						},
+						"description": "Creates a new task in the system. Returns 201 Created with the created task object."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Task - High Priority",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Critical Bug Fix\",\n    \"description\": \"Fix production issue causing data inconsistency\",\n    \"status\": \"IN_PROGRESS\",\n    \"priority\": 1,\n    \"dueDate\": \"2025-10-05\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							]
+						},
+						"description": "Example of creating a high priority task"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Task - Medium Priority",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Implement New Feature\",\n    \"description\": \"Add user authentication to the application\",\n    \"status\": \"TODO\",\n    \"priority\": 3,\n    \"dueDate\": \"2025-11-15\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							]
+						},
+						"description": "Example of creating a medium priority task"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Task - Low Priority",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Code Refactoring\",\n    \"description\": \"Refactor legacy code for better maintainability\",\n    \"status\": \"TODO\",\n    \"priority\": 5,\n    \"dueDate\": \"2025-12-01\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							]
+						},
+						"description": "Example of creating a low priority task"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Tasks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							]
+						},
+						"description": "Retrieves all tasks without any filters. Returns 200 OK with array of tasks."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Task by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks",
+								"{{taskId}}"
+							]
+						},
+						"description": "Retrieves a specific task by its ID. Returns 200 OK with the task object, or 404 Not Found if task doesn't exist."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter by Status - TODO",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks?status=TODO",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "TODO"
+								}
+							]
+						},
+						"description": "Get all tasks with status TODO"
+					},
+					"response": []
+				},
+				{
+					"name": "Filter by Status - IN_PROGRESS",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks?status=IN_PROGRESS",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "IN_PROGRESS"
+								}
+							]
+						},
+						"description": "Get all tasks that are in progress"
+					},
+					"response": []
+				},
+				{
+					"name": "Filter by Status - DONE",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks?status=DONE",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "DONE"
+								}
+							]
+						},
+						"description": "Get all completed tasks"
+					},
+					"response": []
+				},
+				{
+					"name": "Filter by Priority - High (1)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks?priority=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "priority",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Get all high priority tasks (priority 1)"
+					},
+					"response": []
+				},
+				{
+					"name": "Filter by Priority - Medium (3)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks?priority=3",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "priority",
+									"value": "3"
+								}
+							]
+						},
+						"description": "Get all medium priority tasks (priority 3)"
+					},
+					"response": []
+				},
+				{
+					"name": "Filter by Date Range",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks?dueDateFrom=2025-10-01&dueDateTo=2025-12-31",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "dueDateFrom",
+									"value": "2025-10-01"
+								},
+								{
+									"key": "dueDateTo",
+									"value": "2025-12-31"
+								}
+							]
+						},
+						"description": "Get all tasks due between specified dates"
+					},
+					"response": []
+				},
+				{
+					"name": "Search by Keyword",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks?search=documentation",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "documentation"
+								}
+							]
+						},
+						"description": "Search tasks by keyword in title or description (case-insensitive)"
+					},
+					"response": []
+				},
+				{
+					"name": "Sort by Priority - Ascending",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks?sortBy=priority&sortDirection=asc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "priority"
+								},
+								{
+									"key": "sortDirection",
+									"value": "asc"
+								}
+							]
+						},
+						"description": "Get all tasks sorted by priority in ascending order (highest priority first)"
+					},
+					"response": []
+				},
+				{
+					"name": "Sort by Due Date - Descending",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks?sortBy=dueDate&sortDirection=desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "dueDate"
+								},
+								{
+									"key": "sortDirection",
+									"value": "desc"
+								}
+							]
+						},
+						"description": "Get all tasks sorted by due date in descending order (latest first)"
+					},
+					"response": []
+				},
+				{
+					"name": "Advanced Filter - Multiple Criteria",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks?status=TODO&priority=1&dueDateFrom=2025-10-01&dueDateTo=2025-12-31&sortBy=dueDate&sortDirection=asc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "TODO"
+								},
+								{
+									"key": "priority",
+									"value": "1"
+								},
+								{
+									"key": "dueDateFrom",
+									"value": "2025-10-01"
+								},
+								{
+									"key": "dueDateTo",
+									"value": "2025-12-31"
+								},
+								{
+									"key": "sortBy",
+									"value": "dueDate"
+								},
+								{
+									"key": "sortDirection",
+									"value": "asc"
+								}
+							]
+						},
+						"description": "Advanced filtering with multiple criteria: status, priority, date range, and sorting"
+					},
+					"response": []
+				},
+				{
+					"name": "Advanced Filter - Search + Status + Sort",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks?search=bug&status=IN_PROGRESS&sortBy=priority&sortDirection=asc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "bug"
+								},
+								{
+									"key": "status",
+									"value": "IN_PROGRESS"
+								},
+								{
+									"key": "sortBy",
+									"value": "priority"
+								},
+								{
+									"key": "sortDirection",
+									"value": "asc"
+								}
+							]
+						},
+						"description": "Search for 'bug' in IN_PROGRESS tasks, sorted by priority"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Task",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Complete Project Documentation - Updated\",\n    \"description\": \"Write comprehensive documentation for the task management API including setup instructions, API usage examples, and deployment guide\",\n    \"status\": \"IN_PROGRESS\",\n    \"priority\": 1,\n    \"dueDate\": \"2025-12-15\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks",
+								"{{taskId}}"
+							]
+						},
+						"description": "Updates an existing task. Returns 200 OK with updated task, or 404 Not Found if task doesn't exist."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Task - Mark as Done",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Complete Project Documentation\",\n    \"description\": \"Write comprehensive documentation for the task management API\",\n    \"status\": \"DONE\",\n    \"priority\": 1,\n    \"dueDate\": \"2025-12-31\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks",
+								"{{taskId}}"
+							]
+						},
+						"description": "Example of marking a task as completed"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Task - Change Priority",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Critical Bug Fix\",\n    \"description\": \"Fix production issue - escalated to highest priority\",\n    \"status\": \"IN_PROGRESS\",\n    \"priority\": 1,\n    \"dueDate\": \"2025-10-05\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks",
+								"{{taskId}}"
+							]
+						},
+						"description": "Example of changing task priority"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Task",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks/{{taskId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks",
+								"{{taskId}}"
+							]
+						},
+						"description": "Deletes a task by ID. Returns 204 No Content on success, or 404 Not Found if task doesn't exist."
+					},
+					"response": []
+				}
+			],
+			"description": "All task-related endpoints including CRUD operations and advanced filtering"
+		},
+		{
+			"name": "Validation Examples",
+			"item": [
+				{
+					"name": "Create Task - Invalid (Missing Title)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"This should fail - no title provided\",\n    \"status\": \"TODO\",\n    \"priority\": 1,\n    \"dueDate\": \"2025-12-31\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							]
+						},
+						"description": "Example of validation error - missing required field. Returns 400 Bad Request."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Task - Invalid (Priority Out of Range)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Invalid Task\",\n    \"description\": \"Priority is out of valid range (1-5)\",\n    \"status\": \"TODO\",\n    \"priority\": 10,\n    \"dueDate\": \"2025-12-31\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							]
+						},
+						"description": "Example of validation error - priority must be between 1-5. Returns 400 Bad Request."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Task - Invalid (Title Too Long)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"This is a very long title that exceeds the maximum allowed length of 200 characters. This is a very long title that exceeds the maximum allowed length of 200 characters. This is a very long title that exceeds the maximum allowed length of 200 characters.\",\n    \"description\": \"Testing title length validation\",\n    \"status\": \"TODO\",\n    \"priority\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							]
+						},
+						"description": "Example of validation error - title too long. Returns 400 Bad Request."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Task - Not Found",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/tasks/invalid-id-12345",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tasks",
+								"invalid-id-12345"
+							]
+						},
+						"description": "Example of 404 error when task doesn't exist"
+					},
+					"response": []
+				}
+			],
+			"description": "Examples of validation errors and error handling"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "taskId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+
