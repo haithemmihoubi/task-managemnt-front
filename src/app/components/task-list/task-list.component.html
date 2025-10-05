@@ -1,0 +1,461 @@
+<div class="container-fluid py-4 px-4">
+  <!-- Enhanced Header with Gradient -->
+  <div class="header-card mb-4">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="logo-icon">
+          <i class="bi bi-check2-circle"></i>
+        </div>
+        <div>
+          <h1 class="header-title mb-1">Task Management</h1>
+          <p class="header-subtitle mb-0">Organize your work efficiently</p>
+        </div>
+      </div>
+      <button class="btn btn-create" (click)="openCreateModal()">
+        <i class="bi bi-plus-lg"></i> New Task
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Alert with Animation -->
+  <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert" *ngIf="error">
+    <div class="d-flex align-items-center">
+      <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+      <div>
+        <strong>Error!</strong> {{ error }}
+      </div>
+    </div>
+    <button type="button" class="btn-close" (click)="error = ''" aria-label="Close"></button>
+  </div>
+
+  <!-- Loading Spinner with Better Design -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="spinner-wrapper">
+      <div class="spinner-border text-primary" style="width: 3.5rem; height: 3.5rem;" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3 text-muted fw-medium">Loading your tasks...</p>
+    </div>
+  </div>
+
+  <!-- Enhanced Filters Section -->
+  <div class="filters-card mb-4" *ngIf="!loading">
+    <div class="filters-header">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-funnel me-2 fs-5"></i>
+        <h5 class="mb-0 fw-bold">Filters & Search</h5>
+      </div>
+      <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()">
+        <i class="bi bi-x-lg me-1"></i> Clear All
+      </button>
+    </div>
+    <div class="filters-body">
+      <div class="row g-3">
+        <!-- Search with Icon -->
+        <div class="col-md-6 col-lg-4">
+          <label class="form-label fw-semibold text-muted small">Search Tasks</label>
+          <div class="input-icon-wrapper">
+            <i class="bi bi-search input-icon"></i>
+            <input
+              type="text"
+              [(ngModel)]="searchQuery"
+              placeholder="Search by title or description..."
+              class="form-control form-control-enhanced"
+            />
+          </div>
+        </div>
+
+        <!-- Status Filter -->
+        <div class="col-md-6 col-lg-2">
+          <label class="form-label fw-semibold text-muted small">Status</label>
+          <select [(ngModel)]="filterStatus" class="form-select form-select-enhanced">
+            <option value="">All Statuses</option>
+            <option value="TODO">To Do</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="DONE">Done</option>
+          </select>
+        </div>
+
+        <!-- Priority Filter -->
+        <div class="col-md-6 col-lg-2">
+          <label class="form-label fw-semibold text-muted small">Priority</label>
+          <select [(ngModel)]="filterPriority" class="form-select form-select-enhanced">
+            <option value="">All Priorities</option>
+            <option value="1">Critical</option>
+            <option value="2">High</option>
+            <option value="3">Medium</option>
+            <option value="4">Low</option>
+            <option value="5">Very Low</option>
+          </select>
+        </div>
+
+        <!-- Sort By -->
+        <div class="col-md-6 col-lg-2">
+          <label class="form-label fw-semibold text-muted small">Sort By</label>
+          <select [(ngModel)]="sortBy" class="form-select form-select-enhanced">
+            <option value="priority">Priority</option>
+            <option value="dueDate">Due Date</option>
+            <option value="title">Title</option>
+            <option value="createdAt">Created</option>
+          </select>
+        </div>
+
+        <!-- Sort Direction -->
+        <div class="col-md-6 col-lg-2">
+          <label class="form-label fw-semibold text-muted small">Order</label>
+          <select [(ngModel)]="sortDirection" class="form-select form-select-enhanced">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+
+        <!-- Date Range -->
+        <div class="col-md-6 col-lg-3">
+          <label class="form-label fw-semibold text-muted small">Due Date From</label>
+          <input
+            type="date"
+            [(ngModel)]="dueDateFrom"
+            class="form-control form-control-enhanced"
+          />
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <label class="form-label fw-semibold text-muted small">Due Date To</label>
+          <input
+            type="date"
+            [(ngModel)]="dueDateTo"
+            class="form-control form-control-enhanced"
+          />
+        </div>
+
+        <!-- Apply Button -->
+        <div class="col-md-12 col-lg-6">
+          <label class="form-label fw-semibold text-muted small d-none d-lg-block">&nbsp;</label>
+          <button class="btn btn-primary w-100 btn-apply" (click)="applyFilters()">
+            <i class="bi bi-check-circle me-2"></i> Apply Filters
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tasks Summary with Stats -->
+  <div class="stats-container mb-4" *ngIf="!loading">
+    <div class="stat-card stat-card-primary">
+      <div class="stat-icon">
+        <i class="bi bi-list-task"></i>
+      </div>
+      <div>
+        <div class="stat-label">Total Tasks</div>
+        <div class="stat-value">{{ filteredTasks.length }}</div>
+      </div>
+    </div>
+    <div class="stat-card stat-card-warning">
+      <div class="stat-icon">
+        <i class="bi bi-arrow-repeat"></i>
+      </div>
+      <div>
+        <div class="stat-label">In Progress</div>
+        <div class="stat-value">{{ getTaskCountByStatus('IN_PROGRESS') }}</div>
+      </div>
+    </div>
+    <div class="stat-card stat-card-success">
+      <div class="stat-icon">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <div>
+        <div class="stat-label">Completed</div>
+        <div class="stat-value">{{ getTaskCountByStatus('DONE') }}</div>
+      </div>
+    </div>
+    <div class="stat-card stat-card-info">
+      <div class="stat-icon">
+        <i class="bi bi-clipboard"></i>
+      </div>
+      <div>
+        <div class="stat-label">To Do</div>
+        <div class="stat-value">{{ getTaskCountByStatus('TODO') }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enhanced Tasks Grid -->
+  <div class="row g-4 mb-4" *ngIf="!loading && filteredTasks.length > 0">
+    <div class="col-sm-6 col-lg-4 col-xl-3" *ngFor="let task of filteredTasks; let i = index">
+      <div class="task-card-enhanced" [style.animation-delay]="(i * 50) + 'ms'">
+        <div class="task-card-header">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <span class="badge-priority badge" [ngClass]="getPriorityClass(task.priority)">
+              <i [class]="getPriorityIcon(task.priority)" class="me-1"></i>
+              {{ getPriorityLabel(task.priority) }}
+            </span>
+            <span class="badge-status badge" [ngClass]="getStatusClass(task.status)">
+              <i [class]="getStatusIcon(task.status)" class="me-1"></i>
+              {{ getStatusLabel(task.status) }}
+            </span>
+          </div>
+        </div>
+
+        <div class="task-card-body">
+          <h5 class="task-title-enhanced">{{ task.title }}</h5>
+          <p class="task-description-enhanced">{{ task.description }}</p>
+
+          <div class="task-meta-enhanced">
+            <div class="meta-item">
+              <i class="bi bi-calendar-event meta-icon"></i>
+              <span class="meta-text">{{ formatDate(task.dueDate) }}</span>
+            </div>
+            <div class="meta-item" *ngIf="task.createdAt">
+              <i class="bi bi-clock meta-icon"></i>
+              <span class="meta-text">{{ getTimeAgo(task.createdAt) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card-footer">
+          <button class="btn-task-action btn-task-view" (click)="viewTaskDetails(task)" title="View Details">
+            <i class="bi bi-eye"></i>
+          </button>
+          <button class="btn-task-action btn-task-edit" (click)="openEditModal(task)" title="Edit">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn-task-action btn-task-delete" (click)="deleteTask(task.id)" title="Delete">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enhanced Empty State -->
+  <div class="empty-state-enhanced" *ngIf="!loading && filteredTasks.length === 0">
+    <div class="empty-illustration">
+      <i class="bi bi-inbox empty-icon-large"></i>
+      <div class="empty-bg-circle"></div>
+    </div>
+    <h3 class="empty-title">No Tasks Found</h3>
+    <p class="empty-description">Start organizing your work by creating your first task</p>
+    <button class="btn btn-create btn-lg" (click)="openCreateModal()">
+      <i class="bi bi-plus-lg"></i> Create Your First Task
+    </button>
+  </div>
+</div>
+
+<!-- Enhanced Create/Edit Modal -->
+<div class="modal-backdrop-enhanced" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-container-enhanced" (click)="$event.stopPropagation()">
+    <div class="modal-header-enhanced">
+      <div>
+        <h3 class="modal-title-enhanced">
+          <i [class]="isEditMode ? 'bi bi-pencil-square' : 'bi bi-plus-circle'" class="modal-icon"></i>
+          {{ isEditMode ? 'Edit Task' : 'Create New Task' }}
+        </h3>
+        <p class="modal-subtitle">{{ isEditMode ? 'Update task details' : 'Add a new task to your list' }}</p>
+      </div>
+      <button class="btn-close-enhanced" (click)="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body-enhanced">
+      <form>
+        <!-- Title -->
+        <div class="form-group-enhanced">
+          <label class="form-label-enhanced">
+            <i class="bi bi-fonts me-2"></i>
+            Task Title <span class="text-danger">*</span>
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="currentTask.title"
+            name="title"
+            placeholder="Enter a descriptive title..."
+            class="form-control form-control-modal"
+            maxlength="200"
+          />
+          <small class="form-hint">{{ currentTask.title.length }}/200 characters</small>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group-enhanced">
+          <label class="form-label-enhanced">
+            <i class="bi bi-file-text me-2"></i>
+            Description <span class="text-danger">*</span>
+          </label>
+          <textarea
+            [(ngModel)]="currentTask.description"
+            name="description"
+            placeholder="Describe the task in detail..."
+            class="form-control form-control-modal"
+            rows="4"
+          ></textarea>
+        </div>
+
+        <div class="row g-3">
+          <!-- Status -->
+          <div class="col-md-4">
+            <label class="form-label-enhanced">
+              <i class="bi bi-flag me-2"></i>
+              Status <span class="text-danger">*</span>
+            </label>
+            <select [(ngModel)]="currentTask.status" name="status" class="form-select form-select-modal">
+              <option [value]="TaskStatus.TODO">To Do</option>
+              <option [value]="TaskStatus.IN_PROGRESS">In Progress</option>
+              <option [value]="TaskStatus.DONE">Done</option>
+            </select>
+          </div>
+
+          <!-- Priority -->
+          <div class="col-md-4">
+            <label class="form-label-enhanced">
+              <i class="bi bi-exclamation-circle me-2"></i>
+              Priority <span class="text-danger">*</span>
+            </label>
+            <select [(ngModel)]="currentTask.priority" name="priority" class="form-select form-select-modal">
+              <option [value]="1">Critical</option>
+              <option [value]="2">High</option>
+              <option [value]="3">Medium</option>
+              <option [value]="4">Low</option>
+              <option [value]="5">Very Low</option>
+            </select>
+          </div>
+
+          <!-- Due Date -->
+          <div class="col-md-4">
+            <label class="form-label-enhanced">
+              <i class="bi bi-calendar3 me-2"></i>
+              Due Date
+            </label>
+            <input
+              type="date"
+              [(ngModel)]="currentTask.dueDate"
+              name="dueDate"
+              class="form-control form-control-modal"
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer-enhanced">
+      <button class="btn btn-outline-secondary btn-modal" (click)="closeModal()">
+        <i class="bi bi-x-lg me-2"></i>Cancel
+      </button>
+      <button class="btn btn-primary btn-modal" (click)="saveTask()">
+        <i [class]="isEditMode ? 'bi bi-save me-2' : 'bi bi-check-lg me-2'"></i>
+        {{ isEditMode ? 'Update Task' : 'Create Task' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Enhanced Details Modal -->
+<div class="modal-backdrop-enhanced" *ngIf="showDetailsModal" (click)="closeDetailsModal()">
+  <div class="modal-container-enhanced modal-details" (click)="$event.stopPropagation()">
+    <div class="modal-header-enhanced">
+      <div>
+        <h3 class="modal-title-enhanced">
+          <i class="bi bi-file-earmark-text modal-icon"></i>
+          Task Details
+        </h3>
+        <p class="modal-subtitle">Complete information about this task</p>
+      </div>
+      <button class="btn-close-enhanced" (click)="closeDetailsModal()">×</button>
+    </div>
+
+    <div class="modal-body-enhanced" *ngIf="selectedTask">
+      <div class="detail-section">
+        <div class="detail-label">
+          <i class="bi bi-fonts me-2"></i>Title
+        </div>
+        <div class="detail-value detail-value-title">{{ selectedTask.title }}</div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-label">
+          <i class="bi bi-file-text me-2"></i>Description
+        </div>
+        <div class="detail-value">{{ selectedTask.description }}</div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="detail-section">
+            <div class="detail-label">
+              <i class="bi bi-flag me-2"></i>Status
+            </div>
+            <div class="detail-value">
+              <span class="badge badge-lg" [ngClass]="getStatusClass(selectedTask.status)">
+                <i [class]="getStatusIcon(selectedTask.status)" class="me-1"></i>
+                {{ getStatusLabel(selectedTask.status) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="detail-section">
+            <div class="detail-label">
+              <i class="bi bi-exclamation-circle me-2"></i>Priority
+            </div>
+            <div class="detail-value">
+              <span class="badge badge-lg" [ngClass]="getPriorityClass(selectedTask.priority)">
+                <i [class]="getPriorityIcon(selectedTask.priority)" class="me-1"></i>
+                {{ getPriorityLabel(selectedTask.priority) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="detail-section">
+            <div class="detail-label">
+              <i class="bi bi-calendar-event me-2"></i>Due Date
+            </div>
+            <div class="detail-value">
+              <i class="bi bi-calendar3 detail-icon"></i> {{ formatDate(selectedTask.dueDate) }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6" *ngIf="selectedTask.createdAt">
+          <div class="detail-section">
+            <div class="detail-label">
+              <i class="bi bi-clock-history me-2"></i>Created
+            </div>
+            <div class="detail-value">
+              <i class="bi bi-clock detail-icon"></i> {{ formatDetailDate(selectedTask.createdAt) }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section" *ngIf="selectedTask.updatedAt">
+        <div class="detail-label">
+          <i class="bi bi-arrow-clockwise me-2"></i>Last Updated
+        </div>
+        <div class="detail-value">
+          <i class="bi bi-arrow-repeat detail-icon"></i> {{ formatDetailDate(selectedTask.updatedAt) }}
+        </div>
+      </div>
+
+      <div class="detail-section" *ngIf="selectedTask.id">
+        <div class="detail-label">
+          <i class="bi bi-hash me-2"></i>Task ID
+        </div>
+        <div class="detail-value">
+          <code class="task-id-code">{{ selectedTask.id }}</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer-enhanced">
+      <button class="btn btn-outline-secondary btn-modal" (click)="closeDetailsModal()">
+        <i class="bi bi-x-lg me-2"></i>Close
+      </button>
+      <button class="btn btn-primary btn-modal" (click)="openEditModal(selectedTask!); closeDetailsModal()">
+        <i class="bi bi-pencil me-2"></i> Edit Task
+      </button>
+    </div>
+  </div>
+</div>
